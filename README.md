@@ -51,7 +51,7 @@ A modern e-commerce platform offering pure ghee, dairy products, honey, and ston
 1. **Clone the repository**
    ```bash
    git clone https://github.com/akashm01github/rosierFoods.git
-   cd rosierFoods
+   cd rosier
    ```
 
 2. **Install dependencies**
