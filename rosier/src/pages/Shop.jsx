@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useCart } from '../CartContext';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const dummyProducts = [
   {
@@ -125,39 +128,72 @@ const Shop = () => {
       ? dummyProducts
       : dummyProducts.filter((product) => product.category === selectedCategory);
 
+  // Prevent body scroll when modal is open
   useEffect(() => {
-    gsap.fromTo(
-      containerRef.current,
-      { opacity: 0 },
-      { opacity: 1, duration: 1, ease: 'power2.out' }
-    );
-
-    gsap.fromTo(
-      productRefs.current,
-      { opacity: 0, y: 100, scale: 0.8 },
-      {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.6,
-        stagger: 0.15,
-        ease: 'back.out(1.7)',
-      }
-    );
-
-    gsap.fromTo(
-      selectRef.current,
-      { opacity: 0, x: 20 },
-      { opacity: 1, x: 0, duration: 0.5, ease: 'power2.out' }
-    );
-
-    if (selectedProduct && popupRef.current) {
-      gsap.fromTo(
-        popupRef.current,
-        { opacity: 0, scale: 0.8 },
-        { opacity: 1, scale: 1, duration: 0.3, ease: 'power2.out' }
-      );
+    if (selectedProduct) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
     }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [selectedProduct]);
+
+  // GSAP animations
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        containerRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 1, ease: 'power2.out' }
+      );
+
+      gsap.fromTo(
+        selectRef.current,
+        { opacity: 0, x: 20 },
+        { opacity: 1, x: 0, duration: 0.5, ease: 'power2.out' }
+      );
+
+      productRefs.current.forEach((el, index) => {
+        if (el) {
+          gsap.fromTo(
+            el,
+            { opacity: 0, y: 100, scale: 0.8 },
+            {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.6,
+              ease: 'back.out(1.7)',
+              scrollTrigger: {
+                trigger: el,
+                start: 'top 80%',
+                end: 'top 20%',
+                toggleActions: 'play none none none',
+                markers: false,
+              },
+            }
+          );
+        }
+      });
+
+      if (selectedProduct && popupRef.current) {
+        gsap.fromTo(
+          popupRef.current,
+          { opacity: 0, scale: 0.8 },
+          { opacity: 1, scale: 1, duration: 0.3, ease: 'power2.out' }
+        );
+      }
+    }, containerRef);
+
+    return () => {
+      ctx.revert();
+      if (containerRef.current) {
+        gsap.set(containerRef.current, { clearProps: 'all' });
+      }
+      document.body.style.height = 'auto';
+    };
   }, [filteredProducts, selectedProduct]);
 
   const handleCardHover = (index, enter) => {
@@ -201,6 +237,11 @@ const Shop = () => {
           scale: 1,
           duration: 0.3,
           ease: 'power2.out',
+          onComplete: () => {
+            window.scrollTo(0, 0);
+            document.body.style.height = 'auto';
+            document.body.offsetHeight; // Trigger reflow
+          },
         });
       },
     });
@@ -222,11 +263,11 @@ const Shop = () => {
 
   return (
     <div
-      className="max-w-7xl mx-auto px-4 py-8 bg-gradient-to-b from-gray-50 to-white"
+      className="max-w-7xl mx-auto px-4 py-8 bg-gradient-to-b from-gray-50 to-white h-auto"
       ref={containerRef}
     >
       <div className="flex justify-between items-center mb-8">
-        <h1 className= "text-4xl font-extrabold text-gray-800">
+        <h1 className="text-4xl font-extrabold text-gray-800">
           {selectedCategory === 'All' ? 'Our Products' : selectedCategory}
         </h1>
         <div className="relative">
@@ -286,7 +327,7 @@ const Shop = () => {
 
       {/* Popup Modal */}
       {selectedProduct && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-[#748DAE] bg-opacity-50 flex items-center justify-center z-50 overflow-hidden">
           <div
             ref={popupRef}
             className="bg-white rounded-xl p-4 max-w-md w-full relative shadow-xl max-h-[90vh] overflow-y-auto"
@@ -298,7 +339,7 @@ const Shop = () => {
               ×
             </button>
             <img
-              src={[selectedProduct.img]}
+              src={selectedProduct.img}
               alt={selectedProduct.name}
               className="w-full max-h-64 object-contain mb-2"
               onError={(e) => {

@@ -27,7 +27,7 @@ const Cart = () => {
               <img src={item.img} alt={item.name} className="w-20 h-20 object-cover" />
               <div className="flex-1 ml-4">
                 <h2 className="text-lg font-semibold">{item.name}</h2>
-                <p>${item.price} x {item.quantity}</p>
+                <p>₹{item.price} x {item.quantity}</p>
               </div>
               <div className="flex items-center space-x-2">
                 <button

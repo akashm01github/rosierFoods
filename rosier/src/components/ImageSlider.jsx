@@ -1,32 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import honeyBanner from '/images/honeyBanner.jpg';
 import gheeBanner from '/images/gheeBanner.jpg';
+import nutBetter from '/images/16_Web_Banner.jpg';
 
 const ImageSlider = () => {
   const images = [
     {
       url: gheeBanner,
       alt: 'Ghee product',
-      title: 'Authentic Ghee Magic',
-      description: 'Experience the rich taste of natural ghee',
+      title: '',
+      description: '',
     },
     {
       url: honeyBanner,
       alt: 'Honey product',
-      title: 'Sweet Honey Delight',
-      description: 'Pure, natural honey from the wild',
+      title: '',
+      description: '',
     },
     {
       url: honeyBanner,
       alt: 'Honey product',
-      title: 'Golden Honey Glow',
-      description: 'Nature’s finest sweetener',
+      title: '',
+      description: '',
     },
     {
       url: gheeBanner,
       alt: 'Ghee product',
-      title: 'Authentic Ghee Magic',
-      description: 'Crafted with tradition and care',
+      title: '',
+      description: '',
+    },
+    {
+      url: nutBetter,
+      alt: 'Nut Better',
+      title: '',
+      description: '',
     },
   ];
 
@@ -89,7 +96,7 @@ const ImageSlider = () => {
 
   return (
     <div
-      className="relative w-full aspect-[16/9] sm:aspect-[21/9] md:aspect-[3/1] max-h-[600px] overflow-hidden"
+      className="relative w-full aspect-[16/10] sm:aspect-[21/10] md:aspect-[3/1.5] max-h-[600px] overflow-hidden"
       role="region"
       aria-label="Image slider"
       onTouchStart={handleTouchStart}
